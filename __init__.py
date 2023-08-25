@@ -7,5 +7,6 @@ SUPPORTED_VERSION = [ "1.30", "1.31", "32" ]
 
 def get_algorithms():
     return {'lfn2pfn': {'belleii': lfn2pfn_jlab},
-            'surl': {'belleii': construct_surl_jlab}
+            'surl': {'belleii': construct_surl_jlab},
+            #'scope': {'belleii': extract_scope_belleii}
            }
