@@ -47,7 +47,7 @@ SCOPE_LENGTH = 25
 
 SCOPE = {"description": "Scope name",
          "type": "string",
-         "pattern": r"^/[A-Za-z0-9\.\-\_\+\/]{1,%s}$" % SCOPE_LENGTH}
+         "pattern": r"^/[A-Za-z0-9\.\-\_\+\:\/]{1,%s}$" % SCOPE_LENGTH}
 
 R_SCOPE = {"description": "Scope name",
            "type": "string",
