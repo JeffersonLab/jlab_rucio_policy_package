@@ -1,6 +1,6 @@
 import fnmatch
 
-def extract_scope_jlab(did):
+def extract_scope_jlab(did, scopes):
     split_did = did.split('/')
     if did.startswith("/mss/clas12"):
         if len(split_did) > 4:
