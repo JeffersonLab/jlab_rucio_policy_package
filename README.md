@@ -17,4 +17,8 @@ The package currently contains the following files :
 ## How to use this policy package
 
 *  Make sure the directory containing the `jlab_rucio_policy_package` is in the PYTHONPATH for the Rucio server.
-*  Set `package = jlab_rucio_policy_package` in the policy section of the Rucio configuration file.
+*  Set following in the `[policy]` section of rucio cfg.
+     ```
+     package = jlab_rucio_policy_package
+     extract_scope= jlab
+     ```
