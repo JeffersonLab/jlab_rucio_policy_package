@@ -1,5 +1,30 @@
+from rucio.rse.translation import RSEDeterministicTranslation
 
-def lfn2pfn_jlab(scope, name, rse, rse_attrs, protocol_attrs):
+class JlabRSEDeterministicTranslation(RSEDeterministicTranslation):
+
+    def __init__(self, rse=None, rse_attributes=None, protocol_attributes=None):
+        """
+        Initialize a translator object from the RSE, its attributes, and the protocol-specific
+        attributes.
+
+        :param rse: Name of RSE for this translation.
+        :param rse_attributes: A dictionary of RSE-specific attributes for use in the translation.
+        :param protocol_attributes: A dictionary of RSE/protocol-specific attributes.
+        """
+        super().__init__()
+        self.rse = rse
+        self.rse_attributes = rse_attributes if rse_attributes else {}
+        self.protocol_attributes = protocol_attributes if protocol_attributes else {}
+
+    @classmethod
+    def _module_init_(cls):
+        """
+        Initialize the class object on first module load.
+        """
+        cls.register(cls.lfn2pfn_belleii, "belleii")
+
+    @staticmethod
+    def lfn2pfn_jlab(scope, name, rse, rse_attrs, protocol_attrs):
     """
     Given a LFN, convert it directly to a path using the mapping:
     note: scopes do not appear in pfn.
@@ -20,3 +45,7 @@ def lfn2pfn_jlab(scope, name, rse, rse_attrs, protocol_attrs):
     del protocol_attrs
 
     return '%s' % name
+    
+JlabRSEDeterministicTranslation._module_init_()
+
+
