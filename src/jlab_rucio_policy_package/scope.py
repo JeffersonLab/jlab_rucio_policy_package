@@ -17,12 +17,12 @@ class JlabScopeExtractionAlgorithm(rucio.common.utils.ScopeExtractionAlgorithms)
         """
         Registers the included scope extraction algorithms
         """
-        cls.register('belleii', cls.extract_scope_belleii)
+        cls.register('jlab', cls.extract_scope_jlab)
 
     @staticmethod
     def extract_scope_jlab(did: str, scopes: Optional['Sequence[str]']) -> 'Sequence[str]':
         """
-        scope extraction algorithm, based on the EIC scope extraction algorithm.
+        scope extraction algorithm, based on the Jlab scope extraction algorithm.
         :param did: The DID to extract the scope from.
         :returns: A tuple containing the extracted scope and the DID.
         """

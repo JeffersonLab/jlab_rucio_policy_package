@@ -21,7 +21,7 @@ class JlabRSEDeterministicTranslation(RSEDeterministicTranslation):
         """
         Initialize the class object on first module load.
         """
-        cls.register(cls.lfn2pfn_belleii, "belleii")
+        cls.register(cls.lfn2pfn_jlab, "jlab")
 
     @staticmethod
     def lfn2pfn_jlab(scope, name, rse, rse_attrs, protocol_attrs):
