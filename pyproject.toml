@@ -17,11 +17,6 @@ dynamic = ["version"]
 readme = "README.md"
 license = {file = "LICENSE"}
 
-[project.optional-dependencies]
-dev = [
-    "rucio @ git+https://github.com/rucio/rucio@master"
-]
-
 [tool.ruff]
 line-length = 256
 
