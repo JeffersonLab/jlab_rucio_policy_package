@@ -1,10 +1,9 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "jlab_rucio_policy_package"
-version = "0.1.0"
 authors = [
     { name="JLAB", email="placeholder@placeholder.com" },
 ]
@@ -14,6 +13,7 @@ classifiers = [
    "Programming Language :: Python :: 3",
    "Operating System :: OS Independent",
 ]
+dynamic = ["version"]
 readme = "README.md"
 license = {file = "LICENSE"}
 
@@ -24,6 +24,8 @@ dev = [
 
 [tool.ruff]
 line-length = 256
+
+[tool.setuptools_scm]
 
 
 # Exclude a variety of commonly ignored directories.
