@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright European Organization for Nuclear Research (CERN) since 2012
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Rizart Dona <rizart.dona@cern.ch>, 2021
+# 
 
-from jsonschema import validate, ValidationError
+
+from jsonschema import ValidationError, validate
 
 from rucio.common.exception import InvalidObject
 
@@ -21,7 +24,8 @@ ACCOUNT_LENGTH = 25
 
 ACCOUNT = {"description": "Account name",
            "type": "string",
-           "pattern": "^[a-z0-9-_]{1,%s}$" % ACCOUNT_LENGTH}
+           "maxLength": ACCOUNT_LENGTH,
+           "pattern": "^[a-zA-Z0-9-_]+$"}
 
 ACCOUNTS = {"description": "Array of accounts",
             "type": "array",
@@ -36,18 +40,20 @@ ACCOUNT_TYPE = {"description": "Account type",
 
 ACTIVITY = {"description": "Activity name",
             "type": "string",
-            "enum": ["Data Brokering", "Data Consolidation", "Data Rebalancing",
+            "enum": ["Data Brokering", "Data Consolidation", "Data rebalancing",
                      "Debug", "Express", "Functional Test", "Group Subscriptions",
                      "Production Input", "Production Output",
                      "Analysis Input", "Analysis Output", "Staging",
                      "T0 Export", "T0 Tape", "Upload/Download (Job)",
-                     "Upload/Download (User)", "User Subscriptions", "Data Challenge"]}
+                     "Upload/Download (User)", "User Subscriptions",
+                     "Data Challenge", "DAC21"]}
 
 SCOPE_LENGTH = 25
 
 SCOPE = {"description": "Scope name",
          "type": "string",
-         "pattern":  "^[a-zA-Z_\\-.0-9]{1,%s}$" % SCOPE_LENGTH}
+         "maxLength": SCOPE_LENGTH,
+         "pattern": "^[a-zA-Z_\\-.0-9]+$"}
 
 R_SCOPE = {"description": "Scope name",
            "type": "string",
@@ -57,7 +63,8 @@ NAME_LENGTH = 250
 
 NAME = {"description": "Data Identifier name",
         "type": "string",
-        "pattern": r"^/[A-Za-z0-9\.\-\_\+\:\/]{1,%s}$" % NAME_LENGTH}
+        "maxLength": NAME_LENGTH,
+        "pattern": r"^/[A-Za-z0-9\.\-\_\+\/\=\:]+$"}
 
 R_NAME = {"description": "Data Identifier name",
           "type": "string",
@@ -176,19 +183,11 @@ IP = {
     "pattern": r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}$'
 }
 
-IPv4orIPv6 = {
-    "description": "IPv4 or IPv6 address",
-    "type": "string",
-    "format": "ipv4_or_ipv6"
-}
-
 CLIENT_STATE = {
     "description": "Client state",
     "type": "string",
     "enum": ['DONE', 'FAILED', 'PROCESSING', 'ALREADY_DONE', 'FILE_NOT_FOUND', 'FOUND_IN_PCACHE', 'DOWNLOAD_ATTEMPT',
-             'FAIL_VALIDATE', 'FOUND_ROOT', 'ServiceUnavailable', 'SERVICE_ERROR', 'CP_TIMEOUT', 'COPY_ERROR',
-             'STAGEIN_ATTEMPT_FAILED', 'SourceNotFound', 'MISSINGOUTPUTFILE', 'MD_MISMATCH', 'CHECKSUMCALCULATIONFAILURE',
-             'MISSINGINPUT', 'MISSING_INPUT']
+             'FAIL_VALIDATE', 'FOUND_ROOT']
 }
 
 RULE = {"description": "Replication rule",
@@ -368,7 +367,7 @@ ACCOUNT_ATTRIBUTE = {"description": "Account attribute",
                      "type": "string",
                      "pattern": r'^[a-zA-Z0-9-_\\/\\.]{1,30}$'}
 
-SCOPE_NAME_REGEXP =  '/([^/]*)(?=/)(.*)'
+SCOPE_NAME_REGEXP = '/([^/]*)(?=/)(.*)'
 
 DISTANCE = {"description": "RSE distance",
             "type": "object",
@@ -429,3 +428,33 @@ def validate_schema(name, obj):
             validate(obj, SCHEMAS.get(name, {}))
     except ValidationError as error:  # NOQA, pylint: disable=W0612
         raise InvalidObject(f'Problem validating {name}: {error}')
+    
+    if name.lower() in ['did']:
+        validate_jlab_did(obj)
+    elif name.lower() in ['dids']:
+        for did in obj:
+            validate_jlab_did(did)
+
+def validate_jlab_did(obj):
+    """
+    Special checking for DIDs
+    Most of the checking is done with JSON schema, but this check
+    makes sure user LFNs are in the correct /USERNAME namespace
+    makes sure group LFNs are in the correct /GROUPNAME namespace
+    """
+    if not obj:
+        return
+
+    lfn = obj['name']
+    scope = obj['scope']
+
+    verify_scope_lfn_match(lfn, scope, "user")
+    verify_scope_lfn_match(lfn, scope, "group")
+
+
+
+def verify_scope_lfn_match(lfn, scope, scope_type):
+    if scope.startswith(f'{scope_type}.'):
+        _, account = scope.split('.', 1)
+        if not lfn.startswith(f'/{account}/'):
+            raise InvalidObject(f"Problem with LFN {lfn} : Not allowed for {scope_type} {account}")
