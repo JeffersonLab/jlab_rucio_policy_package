@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "jlab_rucio_policy_package"
+name = "jlab-rucio-policy-package"
 authors = [
     { name="JLAB", email="placeholder@placeholder.com" },
 ]
