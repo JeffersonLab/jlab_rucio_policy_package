@@ -25,9 +25,6 @@ dev = [
 [tool.ruff]
 line-length = 256
 
-[tool.setuptools_scm]
-
-
 # Exclude a variety of commonly ignored directories.
 exclude = [
     ".bzr",
@@ -57,3 +54,5 @@ exclude = [
     "site-packages",
     "venv",
 ]
+
+[tool.setuptools_scm]
